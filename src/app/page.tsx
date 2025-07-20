@@ -34,6 +34,7 @@ export default function Home() {
           <div className="absolute inset-0 bg-gradient-to-r from-blue-600/10 to-purple-600/10 rounded-3xl blur-3xl -z-10"></div>
           <h1 className="text-5xl md:text-6xl font-extrabold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-6 leading-tight">
             Recurring Date Picker Demo
+            <center>By Kiran.P</center>
           </h1>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed font-medium">
             A comprehensive recurring date picker component with Zustand state management.
