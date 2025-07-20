@@ -1,22 +1,35 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import RecurringDatePicker from '../components/RecurringDatePicker';
+import React, { useEffect } from 'react';
+import dynamic from 'next/dynamic';
+import { useDateStore } from '../store/useDateStore';
+
+const RecurringDatePicker = dynamic(
+  () => import('../components/RecurringDatePicker'),
+  { ssr: false }
+);
 
 export default function Home() {
-  const [selectedDates, setSelectedDates] = useState<Date[]>([]);
-  const [isClient, setIsClient] = useState(false);
+  // Zustand store
+  const {
+    selectedDates,
+    isClient,
+    setSelectedDates,
+    setIsClient,
+    clearDates,
+    getSortedDates
+  } = useDateStore();
 
   useEffect(() => {
     setIsClient(true);
-  }, []);
+  }, [setIsClient]);
 
   const handleDatesChange = (dates: Date[]) => {
     console.log('Recurring dates updated:', dates);
     setSelectedDates(dates);
   };
 
-  const sortedDates = selectedDates.sort((a, b) => a.getTime() - b.getTime());
+  const sortedDates = getSortedDates();
 
   return (
     <main className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 py-12 px-4">
@@ -49,10 +62,18 @@ export default function Home() {
           )}
         </div>
 
-        {/* Add selected dates display */}
+        {/* Add selected dates display with actions */}
         {selectedDates.length > 0 && (
           <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20 p-6 mb-8">
-            <h3 className="text-xl font-bold text-gray-900 mb-4">Selected Recurring Dates:</h3>
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-xl font-bold text-gray-900">Selected Recurring Dates:</h3>
+              <button
+                onClick={clearDates}
+                className="px-4 py-2 bg-red-100 hover:bg-red-200 text-red-700 rounded-lg text-sm font-medium transition-colors"
+              >
+                Clear All
+              </button>
+            </div>
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
               {sortedDates.slice(0, 12).map((date, index) => (
                 <div key={index} className="bg-blue-50 border border-blue-200 rounded-lg p-2 text-sm text-blue-800">
@@ -64,6 +85,9 @@ export default function Home() {
                   +{sortedDates.length - 12} more...
                 </div>
               )}
+            </div>
+            <div className="mt-4 text-sm text-gray-600">
+              Total dates: <span className="font-medium">{selectedDates.length}</span>
             </div>
           </div>
         )}
