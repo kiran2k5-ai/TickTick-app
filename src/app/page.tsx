@@ -1,8 +1,7 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
-import { useDateStore } from '../store/useDateStore';
 
 const RecurringDatePicker = dynamic(
   () => import('../components/RecurringDatePicker'),
@@ -10,26 +9,23 @@ const RecurringDatePicker = dynamic(
 );
 
 export default function Home() {
-  // Zustand store
-  const {
-    selectedDates,
-    isClient,
-    setSelectedDates,
-    setIsClient,
-    clearDates,
-    getSortedDates
-  } = useDateStore();
+  const [selectedDates, setSelectedDates] = useState<Date[]>([]);
+  const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
     setIsClient(true);
-  }, [setIsClient]);
+  }, []);
 
   const handleDatesChange = (dates: Date[]) => {
     console.log('Recurring dates updated:', dates);
     setSelectedDates(dates);
   };
 
-  const sortedDates = getSortedDates();
+  const clearDates = () => {
+    setSelectedDates([]);
+  };
+
+  const sortedDates = [...selectedDates].sort((a, b) => a.getTime() - b.getTime());
 
   return (
     <main className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 py-12 px-4">
@@ -40,13 +36,8 @@ export default function Home() {
             Recurring Date Picker Demo
           </h1>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed font-medium">
-            A comprehensive recurring date picker component with support for daily, weekly, 
-            monthly, and yearly patterns. Features include custom intervals, specific day 
-            selection, and advanced monthly patterns.
+            A comprehensive recurring date picker component with Zustand state management.
           </p>
-          <div className="mt-8 flex justify-center">
-            <div className="w-24 h-1 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full"></div>
-          </div>
         </div>
         
         <div className="mb-12 transform hover:scale-[1.02] transition-transform duration-300">
@@ -62,11 +53,11 @@ export default function Home() {
           )}
         </div>
 
-        {/* Add selected dates display with actions */}
+        {/* Display selected dates */}
         {selectedDates.length > 0 && (
           <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20 p-6 mb-8">
             <div className="flex justify-between items-center mb-4">
-              <h3 className="text-xl font-bold text-gray-900">Selected Recurring Dates:</h3>
+              <h3 className="text-xl font-bold text-gray-900">Selected Dates:</h3>
               <button
                 onClick={clearDates}
                 className="px-4 py-2 bg-red-100 hover:bg-red-200 text-red-700 rounded-lg text-sm font-medium transition-colors"
@@ -86,91 +77,8 @@ export default function Home() {
                 </div>
               )}
             </div>
-            <div className="mt-4 text-sm text-gray-600">
-              Total dates: <span className="font-medium">{selectedDates.length}</span>
-            </div>
           </div>
         )}
-        
-        <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20 p-8 relative overflow-hidden">
-          <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500"></div>
-          <div className="absolute -top-24 -right-24 w-48 h-48 bg-gradient-to-br from-blue-200/30 to-purple-200/30 rounded-full blur-2xl"></div>
-          <div className="absolute -bottom-24 -left-24 w-48 h-48 bg-gradient-to-tr from-pink-200/30 to-orange-200/30 rounded-full blur-2xl"></div>
-          
-          <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center relative">
-            <span className="bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text text-transparent">
-              ✨ Features & Capabilities
-            </span>
-          </h2>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 relative">
-            <div className="group bg-white/70 backdrop-blur-sm rounded-xl p-6 border border-gray-200/50 hover:border-blue-300/50 hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
-              <div className="flex items-start gap-4">
-                <div className="w-3 h-3 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full mt-2 flex-shrink-0 group-hover:scale-125 transition-transform duration-300"></div>
-                <div>
-                  <h3 className="font-bold text-blue-900 mb-2">Daily Recurrence</h3>
-                  <p className="text-gray-600 text-sm">Every X days with customizable intervals</p>
-                </div>
-              </div>
-            </div>
-            
-            <div className="group bg-white/70 backdrop-blur-sm rounded-xl p-6 border border-gray-200/50 hover:border-purple-300/50 hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
-              <div className="flex items-start gap-4">
-                <div className="w-3 h-3 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full mt-2 flex-shrink-0 group-hover:scale-125 transition-transform duration-300"></div>
-                <div>
-                  <h3 className="font-bold text-purple-900 mb-2">Weekly Recurrence</h3>
-                  <p className="text-gray-600 text-sm">Specific days of the week selection</p>
-                </div>
-              </div>
-            </div>
-            
-            <div className="group bg-white/70 backdrop-blur-sm rounded-xl p-6 border border-gray-200/50 hover:border-green-300/50 hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
-              <div className="flex items-start gap-4">
-                <div className="w-3 h-3 bg-gradient-to-r from-green-500 to-emerald-500 rounded-full mt-2 flex-shrink-0 group-hover:scale-125 transition-transform duration-300"></div>
-                <div>
-                  <h3 className="font-bold text-green-900 mb-2">Monthly Recurrence</h3>
-                  <p className="text-gray-600 text-sm">By date or weekday pattern options</p>
-                </div>
-              </div>
-            </div>
-            
-            <div className="group bg-white/70 backdrop-blur-sm rounded-xl p-6 border border-gray-200/50 hover:border-orange-300/50 hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
-              <div className="flex items-start gap-4">
-                <div className="w-3 h-3 bg-gradient-to-r from-orange-500 to-red-500 rounded-full mt-2 flex-shrink-0 group-hover:scale-125 transition-transform duration-300"></div>
-                <div>
-                  <h3 className="font-bold text-orange-900 mb-2">Yearly Recurrence</h3>
-                  <p className="text-gray-600 text-sm">Annual patterns and celebrations</p>
-                </div>
-              </div>
-            </div>
-            
-            <div className="group bg-white/70 backdrop-blur-sm rounded-xl p-6 border border-gray-200/50 hover:border-indigo-300/50 hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
-              <div className="flex items-start gap-4">
-                <div className="w-3 h-3 bg-gradient-to-r from-indigo-500 to-blue-500 rounded-full mt-2 flex-shrink-0 group-hover:scale-125 transition-transform duration-300"></div>
-                <div>
-                  <h3 className="font-bold text-indigo-900 mb-2">Advanced Patterns</h3>
-                  <p className="text-gray-600 text-sm">"Second Tuesday of every month" and more</p>
-                </div>
-              </div>
-            </div>
-            
-            <div className="group bg-white/70 backdrop-blur-sm rounded-xl p-6 border border-gray-200/50 hover:border-pink-300/50 hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
-              <div className="flex items-start gap-4">
-                <div className="w-3 h-3 bg-gradient-to-r from-pink-500 to-rose-500 rounded-full mt-2 flex-shrink-0 group-hover:scale-125 transition-transform duration-300"></div>
-                <div>
-                  <h3 className="font-bold text-pink-900 mb-2">Visual Preview</h3>
-                  <p className="text-gray-600 text-sm">Mini calendar with highlighted dates</p>
-                </div>
-              </div>
-            </div>
-          </div>
-          
-          <div className="mt-8 text-center">
-            <div className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-500/10 to-purple-500/10 rounded-full border border-blue-200/30">
-              <span className="text-sm font-medium text-gray-700">🚀 Built with React & TypeScript</span>
-            </div>
-          </div>
-        </div>
       </div>
     </main>
   );
